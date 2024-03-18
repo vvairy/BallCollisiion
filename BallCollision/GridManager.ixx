@@ -17,18 +17,20 @@ public:
         sectors.resize(consts::GRID_WIDTH * consts::GRID_HEIGHT);
     }
 
-     void updateSectors() 
+    void update(float& dt)
     {
-        for (auto& sector : sectors)
-            sector.clear();
-
-        for (auto& ball : balls) 
+        updateSectors();
+        for (int i = 0; i < sectors.size(); ++i)
         {
-            int index = getSectorIndex(ball);
-            if (index >= 0 && index < sectors.size())
-                sectors[index].push_back(ball);
+            for (auto& ball : sectors[i])
+                ball->move(dt);
+            checkCollisionsInSector(i);
         }
     }
+
+private:
+    std::vector<std::shared_ptr<Ball>>& balls;
+    std::vector<std::vector<std::shared_ptr<Ball>>> sectors;
 
     int getSectorIndex(const std::shared_ptr<Ball>& ball) const
     {
@@ -46,20 +48,18 @@ public:
         checkCollisionsWithNeighbors(sectorIndex, sectorBalls);
     }
 
-    void update(float& dt)
+    void updateSectors()
     {
-        updateSectors();
-        for (int i = 0; i < sectors.size(); ++i)
+        for (auto& sector : sectors)
+            sector.clear();
+
+        for (auto& ball : balls)
         {
-            for (auto& ball : sectors[i])
-                ball->move(dt);
-            checkCollisionsInSector(i);
+            int index = getSectorIndex(ball);
+            if (index >= 0 && index < sectors.size())
+                sectors[index].push_back(ball);
         }
     }
-
-private:
-    std::vector<std::shared_ptr<Ball>>& balls;
-    std::vector<std::vector<std::shared_ptr<Ball>>> sectors;
 
     void checkCollisionsInSameSector(const std::vector<std::shared_ptr<Ball>>& sectorBalls)
     {
