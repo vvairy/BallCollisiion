@@ -42,11 +42,11 @@ public:
     {
         p += dir * speed * dt;
         gball.setPosition(p);
+        window_collision();
     }
 
     void check_collision(const std::shared_ptr<Ball>& other)
     {
-        window_collision();
         sf::Vector2f delta = other->p - p;
         float distance = getLenght(delta);
         if (distance < (r + other->r)) {
