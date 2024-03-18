@@ -44,7 +44,7 @@ public:
         gball.setPosition(p);
     }
 
-    void check_collision(std::shared_ptr<Ball>& other)
+    void check_collision(const std::shared_ptr<Ball>& other)
     {
         window_collision();
         sf::Vector2f delta = other->p - p;
@@ -81,8 +81,8 @@ public:
             float penetrationDepth = (r + other->r) - distance;
             sf::Vector2f correction = normal * penetrationDepth / (mass1 + mass2) * 2.0f;
 
-                   p -= correction * other->r;
-            other->p += correction * r;
+                   p -= correction * r;
+            other->p += correction * other->r;
         }
     }
 
@@ -101,13 +101,6 @@ private:
     static float dotProduct(const sf::Vector2f& vec1, const sf::Vector2f& vec2)
     {
         return vec1.x * vec2.x + vec1.y * vec2.y;
-    }
-
-    static float getAngle(sf::Vector2f& vec1, sf::Vector2f& vec2)
-    {
-        float up = vec1.x * vec2.x + vec1.y * vec2.y;
-        float down = getLenght(vec1) * getLenght(vec2);
-        return acos(up / down);
     }
 
     static float getLenght(const sf::Vector2f& vec2)

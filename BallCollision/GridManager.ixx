@@ -1,20 +1,23 @@
 #include <vector>
 #include <memory>
+#include <array>
+#include <ranges>
+#include <algorithm>
 #include "constants.h"
 
 export module GridManager;
 
 import Ball;
 
-export class GridManager 
+export class GridManager
 {
 public:
-    GridManager(std::vector<std::shared_ptr<Ball>>& balls) : balls(balls) 
+    GridManager(std::vector<std::shared_ptr<Ball>>& balls) : balls(balls)
     {
         sectors.resize(consts::GRID_WIDTH * consts::GRID_HEIGHT);
     }
-    
-    void updateSectors() 
+
+     void updateSectors() 
     {
         for (auto& sector : sectors)
             sector.clear();
@@ -27,34 +30,26 @@ public:
         }
     }
 
-    int getSectorIndex(std::shared_ptr<Ball>& ball) 
+    int getSectorIndex(const std::shared_ptr<Ball>& ball) const
     {
         int x = ball->p.x / consts::GRID_SIZE;
         int y = ball->p.y / consts::GRID_SIZE;
         return x + y * consts::GRID_WIDTH;
     }
 
-    void checkCollisionsInSector(int sectorIndex) {
+    void checkCollisionsInSector(int sectorIndex)
+    {
         if (sectorIndex < 0 || sectorIndex >= sectors.size()) return;
-        auto& sectorBalls = sectors[sectorIndex];
-        for (auto it1 = sectorBalls.begin(); it1 != sectorBalls.end(); ++it1) 
-        {
-            for (auto it2 = std::next(it1); it2 != sectorBalls.end(); ++it2)
-                (*it1)->check_collision(*it2);
 
-            std::vector neighbors = 
-            { sectorIndex - 1, sectorIndex + 1, sectorIndex - consts::GRID_WIDTH, sectorIndex + consts::GRID_WIDTH };
-            for (int& neighbor : neighbors)
-                if (neighbor >= 0 && neighbor < consts::GRID_WIDTH * consts::GRID_HEIGHT)
-                    for (auto& otherBall : sectors[neighbor])
-                        (*it1)->check_collision(otherBall);
-        }
+        auto& sectorBalls = sectors[sectorIndex];
+        checkCollisionsInSameSector(sectorBalls);
+        checkCollisionsWithNeighbors(sectorIndex, sectorBalls);
     }
 
-    void update(float dt) 
+    void update(float& dt)
     {
         updateSectors();
-        for (int i = 0; i < sectors.size(); ++i) 
+        for (int i = 0; i < sectors.size(); ++i)
         {
             for (auto& ball : sectors[i])
                 ball->move(dt);
@@ -64,6 +59,23 @@ public:
 
 private:
     std::vector<std::shared_ptr<Ball>>& balls;
-    std::vector<std::vector<std::shared_ptr<Ball>>> sectors; //I tried vector of deques, lists, vectors. 
-    //experiment showed vector of vectors is the fastest
+    std::vector<std::vector<std::shared_ptr<Ball>>> sectors;
+
+    void checkCollisionsInSameSector(const std::vector<std::shared_ptr<Ball>>& sectorBalls)
+    {
+        for (const auto& ball : sectorBalls)
+            for (const auto& otherBall : sectorBalls | std::views::drop(&ball - &sectorBalls.front() + 1)) //AB <-> BA
+                ball->check_collision(otherBall);
+    }
+
+    void checkCollisionsWithNeighbors(int idx, const std::vector<std::shared_ptr<Ball>>& sectorBalls)
+    {
+        std::array<int, 4> neighbors = { idx - 1, idx + 1, idx - consts::GRID_WIDTH, idx - consts::GRID_WIDTH };
+
+        for (const auto& ball : sectorBalls)
+            for (int neighbor : neighbors)
+                if (neighbor >= 0 && neighbor < sectors.size())
+                    for (const auto& otherBall : sectors[neighbor])
+                        ball->check_collision(otherBall);
+    }
 };
