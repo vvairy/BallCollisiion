@@ -16,15 +16,15 @@ void draw_fps(std::shared_ptr<sf::RenderWindow> window, float fps)
 int main()
 {
     srand(time(NULL));
-    std::vector<std::shared_ptr<Ball>> balls;
     int ballsCount = MIN_BALLS + rand() % (MAX_BALLS - MIN_BALLS);
+    std::vector<std::shared_ptr<Ball>> balls (ballsCount);
     for (int i = 0; i < ballsCount; i++)
     {
         float radius = 5 + rand() % 10;
         sf::Vector2f point(rand() % WINDOW_X, rand() % WINDOW_Y);
         sf::Vector2f dir((-5 + (rand() % 10)) / 5.f, (-5 + (rand() % 10)) / 5.f);
         float speed = 60 + rand() % 60;
-        balls.push_back(std::make_shared<Ball>(point, Ball::normalize(dir), radius, speed));
+        balls[i] = std::make_shared<Ball>(point, Ball::normalize(dir), radius, speed);
     }
     
     auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode(WINDOW_X, WINDOW_Y), "ball collision demo");
