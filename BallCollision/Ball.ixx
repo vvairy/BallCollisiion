@@ -78,7 +78,7 @@ public:
         }
     }
 
-    static sf::Vector2f normalize(sf::Vector2f vec)
+    static sf::Vector2f normalize(sf::Vector2f& vec)
     {
         return vec /= getLenght(vec);
     }

@@ -71,7 +71,7 @@ private:
 
         for (const auto& ball : sectorBalls)
             for (int neighbor : neighbors)
-                if (neighbor >= 0 && neighbor < sectors.size() && !sectors[neighbor].empty())
+                if (neighbor >= 0 && neighbor < sectors.size())
                     for (const auto& otherBall : sectors[neighbor])
                         ball->check_collision(otherBall);
     }
