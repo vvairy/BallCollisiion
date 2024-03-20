@@ -15,11 +15,15 @@ public:
 
 	void update(float& dt)
 	{
-		gridManager.update(dt);
 
 		window->clear();
+		gridManager.update(dt);
 		for (const auto& ball : balls)
+		{
+			ball->move(dt);
+			ball->gball.setPosition({ ball->p.x - ball->r, ball->p.y });
 			window->draw(ball->gball);
+		}
 		window->display();
 	}
 

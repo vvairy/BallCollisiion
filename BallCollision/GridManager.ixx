@@ -21,11 +21,7 @@ public:
     {
         updateSectors();
         for (int i = 0; i < sectors.size(); ++i)
-        {
-            for (auto& ball : sectors[i])
-                ball->move(dt);
             checkCollisionsInSector(i);
-        }
     }
 
 private:
@@ -70,11 +66,12 @@ private:
 
     void checkCollisionsWithNeighbors(int idx, const std::vector<std::shared_ptr<Ball>>& sectorBalls)
     {
-        std::array<int, 4> neighbors = { idx - 1, idx + 1, idx - consts::GRID_WIDTH, idx - consts::GRID_WIDTH };
+        std::array<int, 4> neighbors = 
+        { idx + 1, idx - consts::GRID_WIDTH, idx + 1 - consts::GRID_WIDTH, idx + 1 + consts::GRID_WIDTH };
 
         for (const auto& ball : sectorBalls)
             for (int neighbor : neighbors)
-                if (neighbor >= 0 && neighbor < sectors.size())
+                if (neighbor >= 0 && neighbor < sectors.size() && !sectors[neighbor].empty())
                     for (const auto& otherBall : sectors[neighbor])
                         ball->check_collision(otherBall);
     }

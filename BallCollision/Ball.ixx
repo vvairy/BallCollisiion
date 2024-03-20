@@ -21,10 +21,10 @@ public:
             dir.x *= -1;
             p.x = r;
         }
-        if (p.x > WINDOW_X - 2 * r)
+        if (p.x > WINDOW_X - r)
         {
             dir.x *= -1;
-            p.x = WINDOW_X - 2 * r;
+            p.x = WINDOW_X - r;
         }
         if (p.y < 0 + r)
         {
@@ -41,7 +41,7 @@ public:
     void move(float& dt)
     {
         p += dir * speed * dt;
-        gball.setPosition(p);
+        gball.setPosition({ p.x - r, p.y });
         window_collision();
     }
 
@@ -50,18 +50,7 @@ public:
         sf::Vector2f delta = other->p - p;
         float distance = getLenght(delta);
         if (distance < (r + other->r)) {
-
-            /*
-            if (gball.getFillColor() == sf::Color::Red)
-                gball.setFillColor(sf::Color::Blue);
-            else
-                gball.setFillColor(sf::Color::Red);
-
-            if (other->gball.getFillColor() == sf::Color::Red)
-                other->gball.setFillColor(sf::Color::Blue);
-            else
-                other->gball.setFillColor(sf::Color::Red);*/
-
+      
             sf::Vector2f normal = delta / distance;
             sf::Vector2f tangent = { -normal.y, normal.x };
 
@@ -76,26 +65,30 @@ public:
             //set new dirs
                    dir = normal * newNormSpeed1 + tangent * dotProductTangent1;
             other->dir = normal * newNormSpeed2 + tangent * dotProductTangent2;
-
+           
             // prevent balls from sticking
             float penetrationDepth = (r + other->r) - distance;
-            sf::Vector2f correction = normal * penetrationDepth / (mass1 + mass2) * 2.0f;
+            sf::Vector2f correction = normal * penetrationDepth / (mass1 + mass2) * 2.f;
 
-                   p -= correction * r;
+            p -= correction * r;
             other->p += correction * other->r;
+
+            gball.setPosition({ p.x - r, p.y });
+            other->gball.setPosition({ other->p.x - other->r, other->p.y });
         }
     }
 
-    static sf::Vector2f normalize(sf::Vector2f& vec)
+    static sf::Vector2f normalize(sf::Vector2f vec)
     {
         return vec /= getLenght(vec);
     }
 
     sf::CircleShape gball;
     sf::Vector2f p;
+    float r = 0;
+
 private:
     sf::Vector2f dir;
-    float r = 0;
     float speed = 0;
 
     static float dotProduct(const sf::Vector2f& vec1, const sf::Vector2f& vec2)
