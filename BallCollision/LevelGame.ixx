@@ -21,7 +21,7 @@ public:
 		for (const auto& ball : balls)
 		{
 			ball->move(dt);
-			ball->gball.setPosition({ ball->p.x - ball->r, ball->p.y });
+			ball->gball.setPosition(ball->p - sf::Vector2f(ball->r, ball->r));
 			window->draw(ball->gball);
 		}
 		window->display();

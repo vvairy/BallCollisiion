@@ -23,10 +23,9 @@ int main()
         float radius = 5 + rand() % 10;
         sf::Vector2f point(rand() % WINDOW_X, rand() % WINDOW_Y);
         sf::Vector2f dir((-5 + (rand() % 10)) / 5.f, (-5 + (rand() % 10)) / 5.f);
-        float speed = 30 + rand() % 30;
+        float speed = 60 + rand() % 60;
         balls[i] = std::make_shared<Ball>(point, Ball::normalize(dir), radius, speed);
     }
-    
     auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode(WINDOW_X, WINDOW_Y), "ball collision demo");
     auto game = std::make_shared<LevelGame>(window, balls);
 

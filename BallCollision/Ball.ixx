@@ -31,17 +31,16 @@ public:
             dir.y *= -1;
             p.y = r;
         }
-        if (p.y > WINDOW_Y - 2 * r)
+        if (p.y > WINDOW_Y - r)
         {
             dir.y *= -1;
-            p.y = WINDOW_Y - 2 * r;
+            p.y = WINDOW_Y - r;
         }
     }
 
     void move(float& dt)
     {
         p += dir * speed * dt;
-        gball.setPosition({ p.x - r, p.y });
         window_collision();
     }
 
@@ -72,9 +71,6 @@ public:
 
             p -= correction * r;
             other->p += correction * other->r;
-
-            gball.setPosition({ p.x - r, p.y });
-            other->gball.setPosition({ other->p.x - other->r, other->p.y });
         }
     }
 
